@@ -1,7 +1,11 @@
 import { useGSAP } from "@gsap/react"
 import { SplitText } from "gsap/all"
 import gsap from "gsap"
+import { useRef } from "react"
+import { useMediaQuery } from "react-responsive";
 function Hero(){
+    const vedioref = useRef();
+    const ismobile = useMediaQuery({maxWidth:767});
     useGSAP(()=>{
        const herosplit = new SplitText('.title',{type:'chars,words'})
        const paragraphsplit = new SplitText(".subtitle",{type:"lines"})
@@ -45,6 +49,26 @@ function Hero(){
      })
      .to(".right-leaf",{y:200},0)
      .to(".left-leaf",{y:-200},0)
+
+     const startvalue = ismobile ? "top 50%":'center 100%';
+     const endvalue = ismobile ? "120 top":"bottom top";
+    
+    const tl = gsap.timeline({
+        scrollTrigger:{
+            trigger:'vedio',
+            start:startvalue,
+            end:endvalue,
+            scrub:true,
+            pin:true,
+        }
+    })
+
+    vedioref.current.onloadedmetadata = ()=>{
+        tl.to(vedioref.current,{
+            currentTime:vedioref.current.duration
+        })
+    }
+
     },[])
 return(
     <>
@@ -71,6 +95,9 @@ return(
         </div>
        </div>
     </section>
+    <div className="video absolute inset-0">
+        <video ref={vedioref} src="/videos/input.mp4" muted playsInline preload="auto"></video>
+    </div>
     </>
 )
 }
